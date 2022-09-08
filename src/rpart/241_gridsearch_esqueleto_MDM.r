@@ -88,7 +88,7 @@ dataset  <- dataset[ clase_ternaria!= "" ]
 # HT  representa  Hiperparameter Tuning
 dir.create( "./exp/",  showWarnings = FALSE ) 
 dir.create( "./exp/HT2022/", showWarnings = FALSE )
-archivo_salida  <- "./exp/HT2022/gridsearch.txt"
+archivo_salida  <- "./exp/HT2022/gridsearch_opt.txt"
 
 #Escribo los titulos al archivo donde van a quedar los resultados
 #atencion que si ya existe el archivo, esta instruccion LO SOBREESCRIBE, y lo que estaba antes se pierde
@@ -104,13 +104,13 @@ cat( file=archivo_salida,
 
 #itero por los loops anidados para cada hiperparametro
 
-for( vmax_depth  in  c( 4, 6, 8, 10, 12, 14 )  )
+for( vmax_depth  in  c( 8, 10, 12)  )
 {
-for( vmin_split  in  c( 1000, 800, 600, 400, 200, 100, 50, 20, 10 )  )
+for( vmin_split  in  c( 1000, 800, 600)  )
 {
-for( vcp in c(-1, -0.5, 0) )
+for( vcp in c(-0.5, -0.1 ) )
 {
-for( vmin_bucket in c(2,4,6,8) )
+for( vmin_bucket in c(2, 4, 8, 20, 100) )
 {
 
   #notar como se agrega
