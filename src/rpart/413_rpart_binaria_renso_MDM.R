@@ -1,10 +1,6 @@
 #Aplicacion de los mejores hiperparametros encontrados en una bayesiana
 #Utilizando clase_binaria =  [  SI = { "BAJA+1", "BAJA+2"} ,  NO="CONTINUA ]
 
-#limpio la memoria
-rm( list=ls() )
-gc()
-
 #cargo las librerias que necesito
 require("data.table")
 require("rpart")
@@ -17,6 +13,18 @@ setwd("C:/Users/Marcos/Documents/Maestria/dmeyf_2022")  #Establezco el Working D
 #cargo el dataset
 dataset  <- fread("./datasets/competencia1_2022.csv" )
 
+
+dataset[ , campo1 := as.integer( ctrx_quarter <14 & mcuentas_saldo < -1256.1 & cprestamos_personales <2 ) ]
+dataset[ , campo2 := as.integer( ctrx_quarter <14 & mcuentas_saldo < -1256.1 & cprestamos_personales>=2 ) ]
+
+dataset[ , campo3 := as.integer( ctrx_quarter <14 & mcuentas_saldo>= -1256.1 & mcaja_ahorro <2601.1 ) ]
+dataset[ , campo4 := as.integer( ctrx_quarter <14 & mcuentas_saldo>= -1256.1 & mcaja_ahorro>=2601.1 ) ]
+
+dataset[ , campo5 := as.integer( ctrx_quarter>=14 & ctrx_quarter<30  & mcaja_ahorro<2604.3  ) ]
+dataset[ , campo6 := as.integer( ctrx_quarter>=14 & ctrx_quarter<30  & mcaja_ahorro>=2604.3  ) ]
+
+dataset[ , campo7 := as.integer( ctrx_quarter>=14 & ctrx_quarter>=30  & ctrx_quarter<49  ) ]
+dataset[ , campo8 := as.integer( ctrx_quarter>=14 & ctrx_quarter>=30  & ctrx_quarter>=49  ) ]
 
 #creo la clase_binaria SI={ BAJA+1, BAJA+2 }    NO={ CONTINUA }
 dataset[ foto_mes==202101, 
@@ -45,22 +53,22 @@ modelo  <- rpart(formula=   "clase_binaria ~ . -clase_ternaria",
 #----------------------------------------------------------------------------
 
 # corrijo manualmente el drifting de  Visa_fultimo_cierre
-# dapply[ Visa_fultimo_cierre== 1, Visa_fultimo_cierre :=  4 ]
-# dapply[ Visa_fultimo_cierre== 7, Visa_fultimo_cierre := 11 ]
-# dapply[ Visa_fultimo_cierre==21, Visa_fultimo_cierre := 25 ]
-# dapply[ Visa_fultimo_cierre==14, Visa_fultimo_cierre := 18 ]
-# dapply[ Visa_fultimo_cierre==28, Visa_fultimo_cierre := 32 ]
-# dapply[ Visa_fultimo_cierre==35, Visa_fultimo_cierre := 39 ]
-# dapply[ Visa_fultimo_cierre> 39, Visa_fultimo_cierre := Visa_fultimo_cierre + 4 ]
+dapply[ Visa_fultimo_cierre== 1, Visa_fultimo_cierre :=  4 ]
+dapply[ Visa_fultimo_cierre== 7, Visa_fultimo_cierre := 11 ]
+dapply[ Visa_fultimo_cierre==21, Visa_fultimo_cierre := 25 ]
+dapply[ Visa_fultimo_cierre==14, Visa_fultimo_cierre := 18 ]
+dapply[ Visa_fultimo_cierre==28, Visa_fultimo_cierre := 32 ]
+dapply[ Visa_fultimo_cierre==35, Visa_fultimo_cierre := 39 ]
+dapply[ Visa_fultimo_cierre> 39, Visa_fultimo_cierre := Visa_fultimo_cierre + 4 ]
 
 # corrijo manualmente el drifting de  Visa_fultimo_cierre
-# dapply[ Master_fultimo_cierre== 1, Master_fultimo_cierre :=  4 ]
-# dapply[ Master_fultimo_cierre== 7, Master_fultimo_cierre := 11 ]
-# dapply[ Master_fultimo_cierre==21, Master_fultimo_cierre := 25 ]
-# dapply[ Master_fultimo_cierre==14, Master_fultimo_cierre := 18 ]
-# dapply[ Master_fultimo_cierre==28, Master_fultimo_cierre := 32 ]
-# dapply[ Master_fultimo_cierre==35, Master_fultimo_cierre := 39 ]
-# dapply[ Master_fultimo_cierre> 39, Master_fultimo_cierre := Master_fultimo_cierre + 4 ]
+dapply[ Master_fultimo_cierre== 1, Master_fultimo_cierre :=  4 ]
+dapply[ Master_fultimo_cierre== 7, Master_fultimo_cierre := 11 ]
+dapply[ Master_fultimo_cierre==21, Master_fultimo_cierre := 25 ]
+dapply[ Master_fultimo_cierre==14, Master_fultimo_cierre := 18 ]
+dapply[ Master_fultimo_cierre==28, Master_fultimo_cierre := 32 ]
+dapply[ Master_fultimo_cierre==35, Master_fultimo_cierre := 39 ]
+dapply[ Master_fultimo_cierre> 39, Master_fultimo_cierre := Master_fultimo_cierre + 4 ]
 
 
 #aplico el modelo a los datos nuevos
@@ -78,7 +86,7 @@ dfinal[ , prob_SI := prediccion[ , "SI"] ]
 
 # por favor cambiar por una semilla propia
 # que sino el Fiscal General va a impugnar la prediccion
-set.seed(999979)  
+set.seed(388699)  
 dfinal[ , azar := runif( nrow(dapply) ) ]
 
 # ordeno en forma descentente, y cuando coincide la probabilidad, al azar
@@ -86,7 +94,7 @@ setorder( dfinal, -prob_SI, azar )
 
 
 dir.create( "./exp/" )
-dir.create( "./exp/KA4120" )
+dir.create( "./exp/KA4123" )
 
 
 for( corte  in  c( 7500, 8000, 8500, 9000, 9500, 10000, 10500, 11000 ) )
@@ -97,6 +105,6 @@ for( corte  in  c( 7500, 8000, 8500, 9000, 9500, 10000, 10500, 11000 ) )
 
 
   fwrite( dfinal[ , list(numero_de_cliente, Predicted) ], #solo los campos para Kaggle
-           file= paste0( "./exp/KA4120/KA4120_005_",  corte, ".csv"),
+           file= paste0( "./exp/KA4123/KA4123_005_",  corte, ".csv"),
            sep=  "," )
 }

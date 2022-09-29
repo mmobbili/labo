@@ -132,7 +132,7 @@ ArbolesCrossValidation  <- function( semilla, data, param, qfolds, pagrupa )
                           seq(qfolds), # 1 2 3 4 5
                           MoreArgs= list( data, param), 
                           SIMPLIFY= FALSE,
-                          mc.cores= 5 )   #debe ir 1 si es Windows
+                          mc.cores= 1 )   #debe ir 1 si es Windows
 
   data[ , fold := NULL ]
 
@@ -157,7 +157,7 @@ EstimarGanancia  <- function( x )
                            ksemilla_azar,
                            MoreArgs= list ( dtrain, param=x, qfolds= xval_folds, pagrupa= "clase_ternaria" ),
                            SIMPLIFY= FALSE,
-                           mc.cores = 5 )  #debe ir 1 si es Windows
+                           mc.cores = 1 )  #debe ir 1 si es Windows
 
 
    ganancia_promedio  <- mean( unlist( vganancias ) )
@@ -176,7 +176,7 @@ EstimarGanancia  <- function( x )
 setwd( "C:/Users/Marcos/Documents/Maestria/dmeyf_2022" )
 
 #cargo el dataset, aqui debe poner  SU RUTA
-dataset  <- fread("./datasets/competencia1_2022.csv")   #donde entreno
+dataset  <- fread("./datasets/competencia1_2022_ext_loco_final.csv")   #donde entreno
 
 #creo la clase_binaria  SI= {BAJA+1, BAJA+2}  NO={CONTINUA}
 dataset[ foto_mes==202101, clase_binaria :=  ifelse( clase_ternaria=="CONTINUA", "NO", "SI" ) ]
@@ -188,12 +188,12 @@ dtrain  <- dataset[ foto_mes==202101, ]
 #creo la carpeta donde va el experimento
 # HT  representa  Hiperparameter Tuning
 #dir.create( "./exp/",  showWarnings = FALSE ) 
-dir.create( "./exp/HT4110/", showWarnings = FALSE )
-setwd("./exp/HT4110/")   #Establezco el Working Directory DEL EXPERIMENTO
+dir.create( "./exp/HT4110_loco/", showWarnings = FALSE )
+setwd("./exp/HT4110_loco/")   #Establezco el Working Directory DEL EXPERIMENTO
 
 #defino los archivos donde guardo los resultados de la Bayesian Optimization
-archivo_log  <- "HT4110.txt"
-archivo_BO   <- "HT4110.RDATA"
+archivo_log  <- "HT4110_loco.txt"
+archivo_BO   <- "HT4110_loco.RDATA"
 
 #leo si ya existe el log, para retomar en caso que se se corte el programa
 GLOBAL_iteracion  <- 0

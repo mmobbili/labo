@@ -1,10 +1,6 @@
 #Aplicacion de los mejores hiperparametros encontrados en una bayesiana
 #Utilizando clase_binaria =  [  SI = { "BAJA+1", "BAJA+2"} ,  NO="CONTINUA ]
 
-#limpio la memoria
-rm( list=ls() )
-gc()
-
 #cargo las librerias que necesito
 require("data.table")
 require("rpart")
@@ -15,7 +11,7 @@ require("rpart.plot")
 setwd("C:/Users/Marcos/Documents/Maestria/dmeyf_2022")  #Establezco el Working Directory
 
 #cargo el dataset
-dataset  <- fread("./datasets/competencia1_2022.csv" )
+dataset  <- fread("./datasets/competencia1_2022_ext.csv" )
 
 
 #creo la clase_binaria SI={ BAJA+1, BAJA+2 }    NO={ CONTINUA }
@@ -34,10 +30,10 @@ dapply  <- dataset[ foto_mes==202103 ]  #defino donde voy a aplicar el modelo
 modelo  <- rpart(formula=   "clase_binaria ~ . -clase_ternaria",
                  data=      dtrain,  #los datos donde voy a entrenar
                  xval=         0,
-                 cp=          -0.54,#  -0.89
-                 minsplit=  1073,   # 621
-                 minbucket=  278,   # 309
-                 maxdepth=     9 )  #  12
+                 cp=          -0.60299,#  -0.89
+                 minsplit=  546,   # 621
+                 minbucket=  272,   # 309
+                 maxdepth=     20 )  #  12
 
 
 #----------------------------------------------------------------------------
@@ -86,10 +82,10 @@ setorder( dfinal, -prob_SI, azar )
 
 
 dir.create( "./exp/" )
-dir.create( "./exp/KA4120" )
+dir.create( "./exp/KA4121" )
 
 
-for( corte  in  c( 7500, 8000, 8500, 9000, 9500, 10000, 10500, 11000 ) )
+for( corte  in  c( 4000, 5000, 6000, 7000 ) )
 {
   #le envio a los  corte  mejores,  de mayor probabilidad de prob_SI
   dfinal[ , Predicted := 0L ]
@@ -97,6 +93,6 @@ for( corte  in  c( 7500, 8000, 8500, 9000, 9500, 10000, 10500, 11000 ) )
 
 
   fwrite( dfinal[ , list(numero_de_cliente, Predicted) ], #solo los campos para Kaggle
-           file= paste0( "./exp/KA4120/KA4120_005_",  corte, ".csv"),
+           file= paste0( "./exp/KA4121/KA4121_005_",  corte, ".csv"),
            sep=  "," )
 }
