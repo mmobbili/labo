@@ -30,7 +30,7 @@ hs  <- makeParamSet(
           makeIntegerParam("mtry" ,             lower=    2L, upper=   50L))
 
 
-ksemilla_azar  <- 102191  #Aqui poner la propia semilla
+ksemilla_azar  <- 999979  #Aqui poner la propia semilla
 
 #------------------------------------------------------------------------------
 #graba a un archivo los componentes de lista
@@ -147,8 +147,14 @@ EstimarGanancia_ranger  <- function( x )
 #Aqui se debe poner la carpeta de la computadora local
 setwd("~/buckets/b1/")   #Establezco el Working Directory
 
+#setwd( "C:/Users/Marcos/Documents/Maestria/dmeyf_2022")   #Establezco el Working Directory
+
+
 #cargo el dataset donde voy a entrenar el modelo
-dataset  <- fread("./datasets/competencia2_2022.csv.gz", stringsAsFactors= TRUE)   #donde entreno
+dataset  <- fread("./datasets/competencia2_FE_2022.csv.gz", stringsAsFactors= TRUE)   #donde entreno
+
+#filtro pocos registros para ver que corra localmente
+#dataset <- dataset[ sample(.N, 10000)]
 
 dataset  <- dataset[ foto_mes==202103 ]
 
