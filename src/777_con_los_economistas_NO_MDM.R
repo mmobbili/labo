@@ -11,22 +11,27 @@ require("data.table")
 require("lightgbm")
 
 #defino la carpeta donde trabajo
-setwd("C:/Users/Marcos/Documents/Maestria/DMEyF")
+setwd( "C:/Users/Marcos/Documents/Maestria/dmeyf_2022")
 
 #cargo el dataset
-dataset  <- fread("./datasetsOri/paquete_premium_202009.csv")
+dataset  <- fread("./datasets/competencia2_2022.csv.gz")
+
 
 #creo la clase_binaria donde en la misma bolsa estan los BAJA+1 y BAJA+2
 dataset[ , clase01:= ifelse( clase_ternaria=="CONTINUA", 0, 1 ) ]
 
+#creo train y apply
+dtrain  <- dataset[ foto_mes == 202103 ]
+dapply  <- dataset[ foto_mes == 202105 ]
+
 
 #Quito el Data Drifting de  "ccajas_transacciones"
-campos_buenos  <- setdiff( colnames(dataset),
+campos_buenos  <- setdiff( colnames(dtrain),
                            c("clase_ternaria", "clase01","ccajas_transacciones" ) )
 
 #genero el formato requerido por LightGBM
-dtrain  <- lgb.Dataset( data=  data.matrix(  dataset[ , campos_buenos, with=FALSE]),
-                        label= dataset[ , clase01]
+dtrain  <- lgb.Dataset( data=  data.matrix(  dtrain[ , campos_buenos, with=FALSE]),
+                        label= dtrain[ , clase01]
                       )
 
 
@@ -42,7 +47,7 @@ modelo  <- lightgbm( data= dtrain,
 
 
 #cargo el dataset donde aplico el modelo
-dapply  <- fread("./datasetsOri/paquete_premium_202011.csv")
+#dapply  <- fread("./datasetsOri/paquete_premium_202011.csv")
 
 #aplico el modelo a los datos nuevos, dapply
 prediccion  <- predict( modelo,  data.matrix( dapply[  , campos_buenos, with=FALSE]))
@@ -53,5 +58,5 @@ entrega  <- as.data.table( list( "numero_de_cliente"= dapply[  , numero_de_clien
 
 #genero el archivo para Kaggle
 fwrite( entrega, 
-        file= "./kaggle/con_los_economistas_NO.csv",
+        file= "./exp/lgbm_2021_orig.csv",
         sep=  "," )
