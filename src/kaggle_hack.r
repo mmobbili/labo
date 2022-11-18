@@ -34,3 +34,24 @@ dir.create( "./exp/KH_MDM/", showWarnings = FALSE )
 fwrite(tabla_final, 
        file= "./exp/KH_MDM/todos_unos.csv",
        sep=  "," )
+
+
+
+#Voy a generar una entrega random
+vector_enviar_rnd <-  as.numeric(runif(nrow( dfuturo))<=(1000/164935))
+length( vector_enviar_rnd)
+
+tabla_final_rnd  <-   as.data.table(  list(  "numero_de_cliente"= vector_ids,
+                                         "Predicted"=         vector_enviar_rnd))
+
+head( tabla_final_rnd)
+
+#genero el archivo para Kaggle
+#creo la carpeta donde va el experimento
+dir.create( "./exp/",  showWarnings = FALSE ) 
+dir.create( "./exp/KH_MDM/", showWarnings = FALSE )
+
+#genero el archivo para Kaggle
+fwrite(tabla_final_rnd, 
+       file= "./exp/KH_MDM/unos_rnd.csv",
+       sep=  "," )
