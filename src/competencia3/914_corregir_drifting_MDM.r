@@ -14,12 +14,12 @@ require("data.table")
 
 #Parametros del script
 PARAM  <- list()
-PARAM$experimento  <- "DR9141"
+PARAM$experimento  <- "DR9141_1_FINAL"
 
-PARAM$exp_input  <- "CA9060"
+PARAM$exp_input  <- "CA9060_1_FINAL"
 
 #valores posibles  "ninguno" "rank_simple" , "rank_cero_fijo" , "deflacion"
-PARAM$metodo  <- "deflacion"
+PARAM$metodo  <- "rank_cero_fijo"
 # FIN Parametros del script
 
 
@@ -100,6 +100,22 @@ AgregarVariables  <- function( dataset )
   dataset[ , vmr_mpagominimo         := vm_mpagominimo  / vm_mlimitecompra ]
 
   #Aqui debe usted agregar sus propias nuevas variables
+  
+  
+  dataset[, f_por_limite_visa := Visa_mlimitecompra/mpayroll]
+  dataset[, f_cprestamos  := cprestamos_personales+cprestamos_prendarios+cprestamos_hipotecarios]
+  dataset[, f_mprestamos  := mprestamos_personales+mprestamos_prendarios+mprestamos_hipotecarios]
+  dataset[, f_limite_total  := Master_mlimitecompra+Visa_mlimitecompra]
+  dataset[, f_ccompras_total_tj  := Master_cconsumos+Visa_cconsumos]
+  dataset[, f_mcompras_total_tj  := Master_mconsumospesos+Visa_mconsumospesos]
+  dataset[, f_cseguros  := cseguro_vida+cseguro_auto+cseguro_vivienda+cseguro_accidentes_personales]
+  dataset[, f_cpagos_servicios  := cpagodeservicios+cpagomiscuentas]
+  dataset[, f_mpagos_servicios  := mpagodeservicios+mpagomiscuentas]
+  dataset[, f_ctarjetas_descuentos  := ctarjeta_visa_descuentos+ctarjeta_master_descuentos]
+  dataset[, f_mtarjetas_descuentos  := mtarjeta_visa_descuentos+mtarjeta_master_descuentos]
+  dataset[, f_ccomisiones  := ccomisiones_mantenimiento+ccomisiones_otras]
+  
+  
 
   #valvula de seguridad para evitar valores infinitos
   #paso los infinitos a NULOS
@@ -195,7 +211,7 @@ setwd("~/buckets/b1")
 
 #cargo el dataset donde voy a entrenar
 #esta en la carpeta del exp_input y siempre se llama  dataset.csv.gz
-dataset_input  <- paste0( "./exp/", PARAM$exp_input, "/dataset.csv.gz" )
+dataset_input  <- paste0( "./exp/", PARAM$exp_input, "/dataset_906.csv.gz" )
 dataset  <- fread( dataset_input )
 
 #creo la carpeta donde va el experimento
