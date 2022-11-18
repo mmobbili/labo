@@ -55,3 +55,24 @@ dir.create( "./exp/KH_MDM/", showWarnings = FALSE )
 fwrite(tabla_final_rnd, 
        file= "./exp/KH_MDM/unos_rnd.csv",
        sep=  "," )
+
+
+#Miro como viene evolucionando BAJA+2
+library(ggplot2)
+
+
+bajas_2019<-dataset[clase_ternaria=='BAJA+2' & foto_mes<= '201912' , .N, foto_mes]
+bajas_2020<-dataset[clase_ternaria=='BAJA+2' & foto_mes<= '202012' &  foto_mes>= '202001', .N, foto_mes]
+bajas_2021<-dataset[clase_ternaria=='BAJA+2' & foto_mes<= '202112' &  foto_mes>= '202101', .N, foto_mes]
+
+
+
+# basic scatterplot
+ggplot(pedo, aes(x=foto_mes, y=N)) + 
+  geom_point()
+
+
+
+plot( density( dataset[ foto_mes==202101, ctrx_quarter] ) )
+
+dataset[ foto_mes==202101, ctrx_quarter]
